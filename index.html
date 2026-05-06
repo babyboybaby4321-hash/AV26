@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A💖V</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{margin:0;overflow-x:hidden}
+.constantia{font-family:Constantia,"Times New Roman",serif;}
+.fade{animation:fadeIn 1s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.reveal{opacity:0;transform:translateY(80px);transition:all 1s ease}
+.reveal.active{opacity:1;transform:translateY(0)}
+#endSection{opacity:0;pointer-events:none;transition:1s}
+#endSection.show{opacity:1;pointer-events:auto}
+/* FIX YOUTUBE IFRAME CLICK BLOCK */
+#memoryModal{
+  pointer-events:none;
+}
+#memoryModal > div{
+  pointer-events:auto;
+}
+</style>
+</head>
+
+<body class="bg-pink-50 constantia">
+
+<audio id="bgMusic" loop>
+  <source src="bgmusic.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="memoryMusic"></audio>
+
+<!-- INTRO -->
+<section id="intro" class="relative h-screen flex items-center justify-center fade">
+<img src="intro.png" class="absolute inset-0 w-full h-full object-cover">
+
+<!-- NEW RIGHT SIDE CONTINUE BUTTON -->
+<button onclick="startQuiz()" 
+class="absolute right-10 bottom-10 bg-white/80 backdrop-blur-md hover:bg-white text-pink-500 px-8 py-4 rounded-full shadow-xl text-xl flex items-center gap-3 transition">
+Continue →
+</button>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="hidden min-h-screen flex flex-col items-center justify-center gap-6 fade" style="background:#f4d3e4">
+<h1 class="text-3xl font-bold">Unlock Me 🔐</h1>
+<div id="quizBox" class="bg-grey p-20 rounded-2xl shadow-lg text-center"></div>
+</section>
+
+<div id="wrongModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center">
+ <div class="bg-white p-8 rounded-2xl text-center shadow-xl">
+  <p class="mb-4 text-xl">Wrong answer 😭 try again</p>
+  <button onclick="wrongModal.classList.add('hidden')" class="bg-pink-400 text-white px-6 py-2 rounded-xl">OK</button>
+ </div>
+</div>
+
+<div id="readPopup" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center">
+<div onclick="openLetter()" class="cursor-pointer bg-white px-10 py-6 rounded-3xl shadow-2xl text-xl">💌 Click me</div>
+</div>
+
+<div id="letterModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-6">
+<div class="bg-white max-w-2xl w-full rounded-3xl p-8 relative shadow-2xl">
+<button onclick="closeLetter()" class="absolute top-4 right-5 text-2xl">✕</button>
+<h2 class="text-3xl mb-6 text-center">! Disclaimer !</h2>
+<p class="text-lg text-center">💕 This website was meant to be special. A surprise I have been working on since January for our anniversary in June, because I can't be by your side for a few years. But with the current situation between us, it might be meaningless now. I would still appreciate it a lot if you take your time to relive each memory one last time. This website won't stay active for very long, so enjoy while you can. 💕</p>
+</div>
+</div>
+
+<section id="main" class="hidden fade min-h-screen bg-cover bg-center bg-fixed p-10" style="background-image:url('background.jpg')">
+<h1 class="text-5xl text-center mb-24 text-white">Our Story 💕</h1>
+<div id="memoriesDiv" class="max-w-4xl mx-auto flex flex-col gap-32"></div>
+</section>
+
+<section id="endSection" class="min-h-screen flex flex-col items-center justify-center text-center bg-black text-white">
+<h1 class="text-5xl mb-6">✨ You're almost done! Be patient for this part✨</h1>
+<button onclick="goToCredits()" class="bg-pink-400 px-8 py-4 rounded-2xl text-xl">Click ME💗</button>
+</section>
+
+<div id="memoryModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6">
+<div class="bg-white p-6 rounded-2xl max-w-5xl w-full grid md:grid-cols-2 gap-6">
+<div id="modalMedia"></div>
+<div>
+<h2 id="modalTitle" class="text-3xl mb-3"></h2>
+<div id="lockPanel">
+<p class="text-xl mb-6">🔒 Memory Locked</p>
+<button onclick="unlockMemory()" class="bg-pink-400 text-white px-6 py-2 rounded-xl">Unlock Memory</button>
+</div>
+<p id="modalDesc" class="text-lg hidden mt-4"></p>
+<button onclick="closeMemory()" class="mt-6 bg-pink-400 text-white px-5 py-2 rounded-xl">Close</button>
+</div>
+</div>
+</div>
+
+<script>
+const music=document.getElementById("bgMusic")
+const memoryMusic=document.getElementById("memoryMusic")
+let viewedMemories=new Set()
+let currentMemoryIndex=null
+
+function startQuiz(){
+ intro.classList.add("hidden");
+ quiz.classList.remove("hidden");
+ music.play();
+}
+
+/* QUIZ */
+const questions=[
+{q:"Where did we first meet?",options:[{img:"mall.png"},{img:"epistemo.png"},{img:"airport.png"}],correct:1},
+{q:"Our favorite food?",options:[{img:"icecream.png"},{img:"pizza.png"},{img:"burger.png"}],correct:0},
+{q:"What's our fav show?",options:[{img:"secE.png"},{img:"bp.png"},{img:"destined.png"}],correct:2}
+]
+let qIndex=0
+
+function loadQuestion(){
+ const q=questions[qIndex]
+ quizBox.innerHTML=`<h2 class='mb-6 text-xl'>${q.q}</h2>
+ <div class='grid grid-cols-3 gap-5'>
+ ${q.options.map((o,i)=>`<img src="${o.img}" onclick="answer(${i})" class="cursor-pointer rounded-xl shadow-lg w-[300px] h-[200px] object-cover">`).join("")}
+ </div>`
+}
+loadQuestion()
+
+function answer(i){
+ if(i!==questions[qIndex].correct){wrongModal.classList.remove("hidden");return}
+ qIndex++; if(qIndex>=questions.length) unlock(); else loadQuestion()
+}
+
+function unlock(){quiz.classList.add("hidden");readPopup.classList.remove("hidden")}
+function openLetter(){readPopup.classList.add("hidden");letterModal.classList.remove("hidden")}
+function closeLetter(){letterModal.classList.add("hidden");main.classList.remove("hidden");setTimeout(revealOnScroll,400)}
+
+function revealOnScroll(){
+ document.querySelectorAll(".reveal").forEach(el=>{
+  if(el.getBoundingClientRect().top < window.innerHeight-120) el.classList.add("active")
+ })
+}
+window.addEventListener("scroll",revealOnScroll)
+
+/* MEMORIES */
+const memories=[
+{
+title:"🌞Cyclothon🚲",
+type:"image",
+src:"num1.png",
+thumb:"num1.png",
+desc:`I still remember this day quite vividly. From the bus ride,the cycling, eating, photos ,everything was together. We just stuck to each other the whole time like magnets while giggling about random nonsense. Cycling was pretty awesome aswell. You almost crashed into me, brake checked me and cut me off🙏. Maybe we should stick to me driving instead. Then that stupid mountain you climbed in like 3 seconds. I look away for 2 seconds and you are at the top and you wanted to slide down like a idiot. Atleast I was there or god knows what nonsense you would have done. Overall, it was a fun day we got too spend together except the stupid bus ride.`,
+music:"L1.mp3",
+width:"600px",
+height:"450px"
+},
+
+{
+title:"Mufasa🦁",
+type:"image",
+src:"abc.png",
+thumb:"abc.png",
+desc:`This was our first plan to hangout without telling anyone. I remember how no one belived it was a coincidence and immediatly knew it was our setup. Do you remember how we got pushed together in that one photo and how we yapped abt it at home cuz it was new to both of us and made it seem like a big deal lol. Also the first time I met Addy, cutest brother in law, so handsome and he even gave a kiss by mistake...making moves before you. It was a cute day, just like you are. And I still don't know who is keerthika🥀`,
+music:"M1.mp3"
+},
+
+{
+title:"EMUN😍",
+type:"image",
+src:"ghi.png",
+thumb:"ghi.png",
+desc:`I genuinly think I can't forget these 3 days we had together. Every single second holding hands wherever we wanted without any care in the world. Legit soo many people saw us and just smiled loll, expesially in the Auditorium and even under the table in lunch secretly. Laughing and yapping constantly abt the most random things made it even better. Every time we ate food, we just fed each other happily and remember that Coke video we made when amu crashed out on surya. Soo funny we just died and somehow ended up sticking together while laughing aswell. We were blindly in love that time. No care abt anything and made memories that I would never forget.`,
+music:"M3.mp3"
+},
+
+{
+title:"Our silly stuff😝",
+type:"image",
+src:"jkl.png",
+thumb:"jkl.png",
+desc:`This set of memories is going to be quite a throwback. Do you remember the one day you messed up on a word that led to our special word LAMP. A word we use to this day that made me forget abt the real one loll. The game we used to play on snap where after saying bye. We legit struggled to leave and played with our bitmoji like idiots to see who goes first. How could I forget abt our bird nonsense, expesially the eagles🦅. Everytime we called each other, we talked absoulute nonsense and to this day I still don't know why the windows dissapear from your room everytime I try to scare you in the call. Lastly, our goodnight,ciya, ily every single day without a miss but valentines was the last time I read those 3 words. There is soo many memories we have made together that we should spend some random night together, just trying to recall each one before I leave.`,
+music:"M4.mp3"
+},
+
+{
+title:"School🏫",
+type:"image",
+src:"def.png",
+thumb:"def.png",
+desc:`School is where everything started. I remember the first time I saw you with Aashi in hindi while you just stood there as I argued with her. Then every cca class we spent together, very happy I was in the same house as you. Eventually 8th grade, we know how that went. In badminton it was awkward half the time, untill I eventually got close with you. The real story starts in 9th. Got closer and closer until you were mine. Every field trip, somehow ending up together like that airplane thingy. Every break going to fill water together and you feeding me the silk I bring. Fighting against teachers and doing our own nonsense no matter what. Every dispersal secretly touching and clinging was great. Do you remember the field trip we wanted to go and the absolute nonsense we talked about, expesially that bed and train nonsense. Condition it seems, we had too many screws loose.`,
+music:"M2.mp3"
+},
+
+{
+title:"Forever together♾️.",
+type:"image",
+src:"mno.png",
+thumb:"mno.png",
+desc:`Do you remember both Ramky's. At kosmos, the basement and stair nonsense we had (we both remember that very well). Then galaxia was the entire area, clinging onto your arm, eating icecream together and then the clubhouse. How was I distracted by the stupid light switches. I hope we can meet up again somewhere, Il plan smt before I leave for sure. And how could I forget abt Aarohi. Still funny to think that we already planned soo much about this loll. It might be a sign we will have her for suree! 
+Funfact, you still have the matching bottle which is mine, but I don't see you using it anymore... I hoped to see it in reso because I still use it all the time, but it might be time to put it away forever.`,
+music:"M6.mp3"
+},
+
+{
+title:"Holi🎊",
+type:"image",
+src:"pqr.png",
+thumb:"pqr.png",
+desc:`One of my favourite and unforgettable memories to this day. Remember under that fake tree while we both secretly touched hands like idiots and acted like it was normal, and you taking iniative first to hold my hands and dance was special to me. Despite it being a very small thing, it was the first time I felt like you geniunly didn't care what anyone would say anymore as they didnt know we were dating yet and did whatever you wanted. And how can I forget abt our silly chats, flavours nonsense started here but sadly we didn't get to test it out.`,
+music:"M7.mp3"
+},
+
+{
+title:"LIST👀",
+type:"image",
+src:"list.png",
+thumb:"list.png",
+desc:`Our very own list of the stupidest things ever🙏. God knows how many more there are but we just don't remember. Enjoy remembering the chats we had when each of these words came for the first time. I was dieing remembering them and im pretty sure you still have tons of screenshots of those chats. We will read them for sure when we hangout, so keep them safe okk.`,
+music:"MList.mp3"
+},
+
+{
+title:"Carnival✨",
+type:"image",
+src:"yz.png",
+thumb:"yz.png",
+desc:`My favourite song, my favourite picture with my favourite person and one of my favourite memories I had with you. That kiss I gave you, made the day more memorable for me personally. I was scared of making this move despite how I talk in chat. Lowkey gave me much more confidence for the next time we hung out somewhere. Then the mall, I happily held your hand whenever I wanted and how you fed me constantly made me love you even more, it was the day that I truly felt how much loved me. But, that was actually the final memory I had with you, when you still loved me.`,
+music:"M9.mp3"
+},
+
+{
+title:"Farewell👋",
+type:"image",
+src:"vwx.png",
+thumb:"vwx.png",
+desc:`I really was looking forward to this day. When we talked few days before about how we will stick together the whole day as its the last time we will be together at school. But now I understood what happened that day. I was very confused at first. You were avoiding me, choosing not to talk and thats why you were stalling on that photo I asked for. We should have talked that day. Instead, you shut me off V. I know my gf very well and knew that you would find a way to still talk to me after your exams were over, but you choose to not do that for your own reasons which I completely respect but I should have realized that sooner. No one told me the real feelings you had of me at that moment and I didn't know anything about it. I didn't even get a chance to talk. All I had was hope that things were gonna get better but without talking at all, it just led to you seperating from me. I guess love wasn't enough. Farewell was the last time I ever saw you as my girlfriend, but that day, we were never together.`,
+music:"M8.mp3"
+},
+
+{
+title:"AV26",
+type:"video",
+videoUrl:"https://www.youtube.com/watch?v=MOM3Q0L1UYA",
+thumb:"vidthumb.png",
+desc:"A special video of our memories. Just for you💗",
+width:"600px",
+height:"450px"
+}
+]
+function createMemoryCard(m,i){
+ const width=m.width?m.width:"440px"
+ const height=m.height?m.height:"450px"
+ return `<div onclick='openMemory(${i})' class="reveal cursor-pointer flex flex-col md:flex-row gap-10 items-center">
+ <img src="${m.thumb}" style="width:${width};height:${height};object-fit:cover;" class="rounded-2xl shadow-xl">
+ <div class="text-white max-w-md">
+ <h3 class="text-3xl mb-3">${m.title}</h3>
+ <p>Click to relive this memory 💕</p>
+ </div></div>`
+}
+memories.forEach((m,i)=>memoriesDiv.innerHTML+=createMemoryCard(m,i))
+
+function openMemory(i){
+ currentMemoryIndex=i
+ const m=memories[i]
+ music.pause()
+ if(m.music){memoryMusic.src=m.music;memoryMusic.play()}
+ modalTitle.innerText=m.title
+ modalDesc.innerText=""
+ modalDesc.classList.add("hidden")
+ lockPanel.style.display="block"
+ if(m.type==='image'){
+  modalMedia.innerHTML=`<img src='${m.src}' class='rounded-xl w-full'>`
+}
+
+if(m.type==='video'){
+  // show thumbnail instead of broken youtube iframe
+  modalMedia.innerHTML = `
+    <img src="${m.thumb}" class="rounded-xl w-full shadow-xl">
+    <p class="text-center mt-3 text-gray-500">Unlock to watch the video 💗</p>
+  `;
+}
+ memoryModal.classList.remove("hidden")
+}
+
+function typeText(text){
+ modalDesc.classList.remove("hidden")
+ const words=text.split(" ")
+ let i=0
+
+ const interval=setInterval(()=>{
+   modalDesc.innerHTML+=words[i]+" "
+   i++
+   if(i>=words.length){
+     clearInterval(interval)
+
+     // ⭐ If this memory is a video → show Watch button AFTER text finishes
+     const m = memories[currentMemoryIndex]
+     if(m.type === "video"){
+        const btn = document.createElement("button")
+        btn.innerText = "▶ Watch Video 💗"
+        btn.className = "mt-6 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-lg shadow-lg"
+        btn.onclick = () => openYoutubeVideo(m.videoUrl)
+
+        modalDesc.appendChild(document.createElement("br"))
+        modalDesc.appendChild(btn)
+     }
+   }
+ },120)
+}
+function unlockMemory(){
+ lockPanel.style.display="none"
+ typeText(memories[currentMemoryIndex].desc)
+ viewedMemories.add(currentMemoryIndex)
+ if(viewedMemories.size===memories.length) document.getElementById("endSection").classList.add("show")
+}
+
+function closeMemory(){memoryModal.classList.add("hidden");memoryMusic.pause();music.play()}
+function openYoutubeVideo(url){
+  music.pause();
+  memoryMusic.pause();
+  window.open(url, "_blank");
+}
+function goToCredits(){music.pause();document.body.style.opacity=0;document.body.style.transition="1.5s";setTimeout(()=>{window.location.href="credits.html"},1500)}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>End Credits</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  background:black;
+  overflow:hidden;
+  font-family:"Courier New",monospace;
+  color:white;
+}
+
+/* ⭐ STARS */
+#stars{
+  position:fixed;
+  width:100%;
+  height:100%;
+  z-index:0;
+}
+.star{
+  position:absolute;
+  width:2px;height:2px;
+  background:white;
+  opacity:.8;
+  animation:twinkle 3s infinite alternate;
+}
+@keyframes twinkle{from{opacity:.2}to{opacity:1}}
+
+/* 📜 CREDITS */
+#creditsWrapper{
+  position:absolute;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+#credits{
+  position:absolute;
+  width:100%;
+  bottom:-100%;
+  text-align:center;
+  font-size:24px;
+  line-height:46px;
+  letter-spacing:2px;
+  padding-bottom:300px;
+}
+
+.fadeTop{
+  position:fixed;
+  top:0;width:100%;height:150px;
+  background:linear-gradient(black,transparent);
+  z-index:2;
+}
+
+/* ❤️ QUESTION SCREEN */
+#questions{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:1.5s;
+  z-index:5;
+  text-align:center;
+}
+#questions.show{opacity:1;pointer-events:auto;}
+
+.qTitle{font-size:30px;margin-bottom:60px;letter-spacing:3px;}
+
+.choices{display:flex;gap:80px;}
+
+.choice{cursor:pointer;text-align:center;transition:.4s;}
+.choice:hover{transform:scale(1.1);}
+
+.choice img{
+  width:300px;height:300px;
+  object-fit:cover;border-radius:20px;margin-bottom:15px;
+}
+
+/* 💌 RESULT POPUP */
+#resultPopup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:0.6s;
+  z-index:10;
+}
+#resultPopup.show{opacity:1;pointer-events:auto;}
+
+.popupBox{
+  background:white;
+  color:black;
+  max-width:600px;
+  padding:40px 35px;
+  border-radius:20px;
+  text-align:center;
+  font-size:22px;
+  line-height:34px;
+  position:relative;
+}
+
+.closePopup{
+  position:absolute;
+  right:18px;
+  top:10px;
+  font-size:28px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div id="stars"></div>
+<div class="fadeTop"></div>
+
+<div id="creditsWrapper">
+<div id="credits">
+
+<h1>THE END</h1><br><br>
+
+Life is an intricate story and love is one of the most complicated parts of it,<br>
+surviving the hardships, enjoying the good moments and creating our own story.<br><br>
+
+Every moment that passes by is a reminder of how short life is,<br>
+that every single memory we make is so valuble.<br>
+And the story I made with you, was perfect...<br><br>
+
+Every I love you, every silly call, and every time we touched like idiots,<br>
+was daily habits for us, but it's the moments that meant the world to me.<br><br>
+
+But now… I don't have you anymore. You are ready to move on.<br>
+I always belived in love being the strongest thing, expesially being with you.<br>
+But for the first time, that single call proved me wrong.<br><br>
+
+You proved to me that hate can be stronger than love.<br>
+You arn't wrong for whatever you are doing, but I belive in second chances.<br>
+I think I deserve your love one last time and trust me, I won't let you down.<br><br>
+
+I've lost many things, important and not important, but Im about to lose you.,<br>
+The same girl who gave me everything,<br>
+is taking everything back and letting me go.<br><br>
+
+I read a quote once- aut viam inveniam aut faciam.<br>
+"I shall either find a way, or I will make one.", and if you give me a chance,<br>
+ I will fix everything.<br><br>
+
+I won't beg for a place in your life if you don't want me in your life.<br>
+I won't stand and wait in the doorway of a relationship where you already walked out<br><br>
+
+So trust me, take my hand and walk with pride,<br>
+The world is ours, we'll decide.<br><br>
+
+Forever more, I'll stay by your side,<br>
+Even when the world pulls us aside.<br><br>
+
+I hope you enjoyed this website and reconsider things.<br>
+I'll see you soon, to talk.<br>
+Until then, In aeternum, te amo💖.<br><br>
+
+Goodbye V.
+
+</div>
+</div>
+
+<audio id="creditsMusic">
+  <source src="endcreds.mp3" type="audio/mp3">
+</audio>
+
+<!-- QUESTION -->
+<div id="questions">
+  <h1 class="qTitle">I know the real reason of the breakup. I want to talk to you about it.<br>
+Before you leave, you can still change your mind.<br>
+Either dating now or not, just a promise that we would get back together when I'm back.<br>
+One last chance Jaanu...</h1>
+
+  <div class="choices">
+    <div class="choice" onclick="sendChoice('YES')">
+      <img src="yes.png">
+      <p>I choose to Love.</p>
+    </div>
+
+    <div class="choice" onclick="sendChoice('NO')">
+      <img src="no.png">
+      <p>I choose to let go.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 💌 RESULT POPUP -->
+<div id="resultPopup">
+  <div class="popupBox">
+    <div class="closePopup" onclick="closePopup()">✕</div>
+    <p id="popupText"></p>
+  </div>
+</div>
+
+<script>
+/* ⭐ STARS */
+const starsContainer=document.getElementById("stars");
+for(let i=0;i<250;i++){
+  let star=document.createElement("div");
+  star.className="star";
+  star.style.left=Math.random()*100+"%";
+  star.style.top=Math.random()*100+"%";
+  star.style.animationDuration=(Math.random()*3+2)+"s";
+  starsContainer.appendChild(star);
+}
+
+const credits=document.getElementById("credits");
+const music=document.getElementById("creditsMusic");
+const questions=document.getElementById("questions");
+
+let position = 0;
+let autoSpeed = 0;
+let manualControl = false;
+let manualTimer;
+
+/* 🎬 FIXED CINEMATIC SCROLL */
+music.onloadedmetadata = () => {
+
+   const duration = music.duration;
+
+   // 👉 REAL height of credits text
+   const creditsHeight = credits.offsetHeight;
+
+   // 👉 START fully below the screen
+   position = -creditsHeight + window.innerHeight * 0.6;
+
+   // 👉 Distance from bottom → fully off the top
+   const travelDistance = creditsHeight + window.innerHeight;
+
+   // 👉 Sync scroll speed to music length
+   autoSpeed = travelDistance / (duration * 78);
+
+   music.play().catch(()=>{});
+   requestAnimationFrame(animateCredits);
+};
+function animateCredits(){
+  if(!manualControl){
+    position+=autoSpeed;
+    credits.style.bottom=position+"px";
+  }
+  requestAnimationFrame(animateCredits);
+}
+
+/* 🎵 SHOW QUESTION WHEN MUSIC ENDS */
+music.onended=()=>{ questions.classList.add("show"); };
+
+/* 🖱️ SCROLL OVERRIDE */
+window.addEventListener("wheel",e=>{
+  manualControl=true;
+  position+=(-e.deltaY*0.5);
+  credits.style.bottom=position+"px";
+  clearTimeout(manualTimer);
+  manualTimer=setTimeout(()=>manualControl=false,1000);
+});
+
+/* 📱 TOUCH SCROLL */
+let touchStart=null;
+window.addEventListener("touchstart",e=>{
+  manualControl=true;
+  touchStart=e.touches[0].clientY;
+});
+window.addEventListener("touchmove",e=>{
+  let diff=touchStart-e.touches[0].clientY;
+  position+=diff*0.2;
+  credits.style.bottom=position+"px";
+  touchStart=e.touches[0].clientY;
+});
+window.addEventListener("touchend",()=>{
+  manualTimer=setTimeout(()=>manualControl=false,1000);
+});
+
+/* 💌 RESULT POPUP LOGIC */
+const popup=document.getElementById("resultPopup");
+const popupText=document.getElementById("popupText");
+
+function sendChoice(answer){
+  questions.classList.remove("show");
+
+  if(answer==="YES"){
+    popupText.innerHTML=
+    `You choose love. 💖<br><br>
+    I knew our story wasn't over. You will always be mine..<br>
+    Thank You for beliving in me. I promise you won't regret it.<br><br>
+    Before you come and meet me to talk, send this specific text(Amor Vincit Omnia) so I know what I have to deal with.<br>
+    Get ready to fly high V, We are gonna fight together.`;
+  }
+
+  if(answer==="NO"){
+    popupText.innerHTML=
+    `You chose to let go💔.<br><br>
+    I really wasn't looking forward to this choice but some stories come to an end and I respect your choice.<br>
+    Thanks for all the love you've given me. I could never ask for anyone better. You will always be my Jaanu.<br><br>
+    Before you come and meet me to talk if you are okay with it, send this specific text(Omnia causa fiunt) so I know what I have to deal with.<br>
+   From now on, you are going to fly without me V.`;
+  }
+
+  popup.classList.add("show");
+}
+
+function closePopup(){
+  popup.classList.remove("show");
+}
+</script>
+
+</body>
+</html>
