@@ -185,8 +185,8 @@ I won't beg for a place in your heart if you don't want me in your life anymore.
 I won't stand and wait in the doorway of our relationship if you already walked out<br>
 But I will try my best to fix whatever we always were. This will be my last attempt.<br><br>
 
-I hope you enjoyed this website and reconsider our relationship.<br>
-Whether it's Friends with benefits till Im back or straight up continuing to date.<br>
+I hope you enjoyed this website and atleast consider talking with me.<br>
+As much as you arn't interested, atleast for me, listen and talk with me once.<br>
 Until then, I love you forever, Jaanu.<br><br>
 
 Goodbye V
@@ -199,11 +199,26 @@ Goodbye V
 </audio>
 
 <!-- QUESTION -->
+<!-- QUESTION -->
 <div id="questions">
-  <h1 class="qTitle">It will be much clearer once we talk, but something I would like to know.<br>
-  you can still change your mind.<br>
+
+<div onclick="closeQuestions()" 
+style="
+position:absolute;
+top:25px;
+right:35px;
+font-size:42px;
+cursor:pointer;
+color:white;
+z-index:20;
+">
+✕
+</div>
+
+  <h1 class="qTitle">It will be much clearer once we talk, but Im gonna try my luck.<br>
+  You're final descsion should be taken after talking, okay Honey...<br>
 Even if we don't date now, just a promise that we would get back together when I return.<br>
-One last chance Jaanu...</h1>
+One last chance Jaanu... A chance to fix my mistakes.</h1>
 
   <div class="choices">
     <div class="choice" onclick="sendChoice('YES')">
@@ -308,15 +323,14 @@ const popup=document.getElementById("resultPopup");
 const popupText=document.getElementById("popupText");
 
 function sendChoice(answer){
-  questions.classList.remove("show");
 
   if(answer==="YES"){
     popupText.innerHTML=
     `You choose love. 💖<br><br>
-    I knew our story wasn't over. You will always be mine.<br>
-    Thank You for beliving in me. I promise you won't regret it.<br><br>
-    Aarohi will for sure come soon😝.<br>
-    send this specific text(Amor Vincit Omnia) before meeting me so I can be prepared.<br>
+    I knew our story won't be over so easily.<br>
+    Thank You for beliving in me. I promise to never let you down.<br><br>
+    I would still like to meet once.<br>
+    send this specific text(Amor Vincit Omnia) if you are meeting me so I can be prepared.<br>
     Get ready to fly high V, We are gonna fly together.`;
   }
 
@@ -325,9 +339,10 @@ function sendChoice(answer){
     `You chose to let go💔.<br><br>
     I really wasn't looking forward to this choice but some stories come to an end and I respect your choice.<br>
     Thanks for all the love you've given me. I could never ask for anyone better. You will always be my Jaanu.<br><br>
-    Even though you are sure you don't want to continue, I would appriciate you coming and talking to me.<br>
-    send this specific text(Omnia causa fiunt) before meeting me so I can be prepared.<br>
-   From now on, you are going to fly without me V.`;
+    Even though you are sure you don't want to continue, I would like you to talk to me just once.<br>
+    You take the descison in my face after talking. I really wish to see you, once more.<br>
+    send this specific text(Omnia causa fiunt) if you are meeting me so I can be prepared.<br>
+    From now on, you are going to fly without me V.`;
   }
 
   popup.classList.add("show");
@@ -335,6 +350,11 @@ function sendChoice(answer){
 
 function closePopup(){
   popup.classList.remove("show");
+}
+
+/* ❌ CLOSE QUESTIONS SCREEN */
+function closeQuestions(){
+  questions.classList.remove("show");
 }
 </script>
 
