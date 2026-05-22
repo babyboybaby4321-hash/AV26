@@ -55,7 +55,7 @@ html,body{
   z-index:2;
 }
 
-/* ❤️ QUESTION SCREEN */
+/* 💌 FINAL SCREEN */
 #questions{
   position:fixed;
   inset:0;
@@ -70,53 +70,42 @@ html,body{
   z-index:5;
   text-align:center;
 }
-#questions.show{opacity:1;pointer-events:auto;}
 
-.qTitle{font-size:30px;margin-bottom:60px;letter-spacing:3px;}
+#questions.show{
+  opacity:1;
+  pointer-events:auto;
+}
 
-.choices{display:flex;gap:80px;}
+.qTitle{
+  font-size:30px;
+  margin-bottom:60px;
+  letter-spacing:3px;
+  line-height:52px;
+}
 
-.choice{cursor:pointer;text-align:center;transition:.4s;}
-.choice:hover{transform:scale(1.1);}
+.choices{
+  display:flex;
+  gap:80px;
+}
+
+.choice{
+  cursor:pointer;
+  text-align:center;
+  transition:.4s;
+  text-decoration:none;
+  color:white;
+}
+
+.choice:hover{
+  transform:scale(1.08);
+}
 
 .choice img{
-  width:300px;height:300px;
-  object-fit:cover;border-radius:20px;margin-bottom:15px;
-}
-
-/* 💌 RESULT POPUP */
-#resultPopup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  opacity:0;
-  pointer-events:none;
-  transition:0.6s;
-  z-index:10;
-}
-#resultPopup.show{opacity:1;pointer-events:auto;}
-
-.popupBox{
-  background:white;
-  color:black;
-  max-width:600px;
-  padding:40px 35px;
+  width:300px;
+  height:300px;
+  object-fit:cover;
   border-radius:20px;
-  text-align:center;
-  font-size:22px;
-  line-height:34px;
-  position:relative;
-}
-
-.closePopup{
-  position:absolute;
-  right:18px;
-  top:10px;
-  font-size:28px;
-  cursor:pointer;
+  margin-bottom:15px;
 }
 </style>
 </head>
@@ -198,8 +187,7 @@ Goodbye V
   <source src="endcreds.mp3" type="audio/mp3">
 </audio>
 
-<!-- QUESTION -->
-<!-- QUESTION -->
+<!-- 💌 FINAL VIDEO SCREEN -->
 <div id="questions">
 
 <div onclick="closeQuestions()" 
@@ -215,35 +203,32 @@ z-index:20;
 ✕
 </div>
 
-  <h1 class="qTitle">It will be much clearer once we talk, but Im gonna try my luck.<br>
-  You're final descsion should be taken after talking, okay Honey...<br>
-Even if we don't date now, just a promise that we would get back together when I return.<br>
-One last chance Jaanu... A chance to fix my mistakes.</h1>
+<h1 class="qTitle">
+One final thing before you leave... 💖<br><br>
+I made something special for you.<br>
+Please watch it till the end.
+</h1>
 
-  <div class="choices">
-    <div class="choice" onclick="sendChoice('YES')">
-      <img src="yes.png">
-      <p>I choose to Love.</p>
-    </div>
+<div class="choices">
 
-    <div class="choice" onclick="sendChoice('NO')">
-      <img src="no.png">
-      <p>I choose to let go.</p>
-    </div>
-  </div>
+<a 
+href="https://www.youtube.com/watch?v=MOM3Q0L1UYA"
+target="_blank"
+class="choice">
+
+<img src="vidthumb.png">
+
+<p>Click Me 🎥</p>
+
+</a>
+
 </div>
-
-<!-- 💌 RESULT POPUP -->
-<div id="resultPopup">
-  <div class="popupBox">
-    <div class="closePopup" onclick="closePopup()">✕</div>
-    <p id="popupText"></p>
-  </div>
 </div>
 
 <script>
 /* ⭐ STARS */
 const starsContainer=document.getElementById("stars");
+
 for(let i=0;i<250;i++){
   let star=document.createElement("div");
   star.className="star";
@@ -282,6 +267,7 @@ music.onloadedmetadata = () => {
    music.play().catch(()=>{});
    requestAnimationFrame(animateCredits);
 };
+
 function animateCredits(){
   if(!manualControl){
     position+=autoSpeed;
@@ -290,69 +276,41 @@ function animateCredits(){
   requestAnimationFrame(animateCredits);
 }
 
-/* 🎵 SHOW QUESTION WHEN MUSIC ENDS */
-music.onended=()=>{ questions.classList.add("show"); };
+/* 🎵 SHOW FINAL SCREEN WHEN MUSIC ENDS */
+music.onended=()=>{ 
+  questions.classList.add("show"); 
+};
 
 /* 🖱️ SCROLL OVERRIDE */
 window.addEventListener("wheel",e=>{
   manualControl=true;
   position+=(-e.deltaY*0.5);
   credits.style.bottom=position+"px";
+
   clearTimeout(manualTimer);
   manualTimer=setTimeout(()=>manualControl=false,1000);
 });
 
 /* 📱 TOUCH SCROLL */
 let touchStart=null;
+
 window.addEventListener("touchstart",e=>{
   manualControl=true;
   touchStart=e.touches[0].clientY;
 });
+
 window.addEventListener("touchmove",e=>{
   let diff=touchStart-e.touches[0].clientY;
   position+=diff*0.2;
   credits.style.bottom=position+"px";
   touchStart=e.touches[0].clientY;
 });
+
 window.addEventListener("touchend",()=>{
   manualTimer=setTimeout(()=>manualControl=false,1000);
 });
 
-/* 💌 RESULT POPUP LOGIC */
-const popup=document.getElementById("resultPopup");
-const popupText=document.getElementById("popupText");
-
-function sendChoice(answer){
-
-  if(answer==="YES"){
-    popupText.innerHTML=
-    `You choose love. 💖<br><br>
-    I knew our story won't be over so easily.<br>
-    Thank You for beliving in me. I promise to never let you down.<br><br>
-    I would still like to meet once.<br>
-    send this specific text(Amor Vincit Omnia) if you are meeting me so I can be prepared.<br>
-    Get ready to fly high V, We are gonna fly together.`;
-  }
-
-  if(answer==="NO"){
-    popupText.innerHTML=
-    `You chose to let go💔.<br><br>
-    I really wasn't looking forward to this choice but some stories come to an end and I respect your choice.<br>
-    Thanks for all the love you've given me. I could never ask for anyone better. You will always be my Jaanu.<br><br>
-    Even though you are sure you don't want to continue, I would like you to talk to me just once.<br>
-    You take the descison in my face after talking. I really wish to see you, once more.<br>
-    send this specific text(Omnia causa fiunt) if you are meeting me so I can be prepared.<br>
-    From now on, you are going to fly without me V.`;
-  }
-
-  popup.classList.add("show");
-}
-
-function closePopup(){
-  popup.classList.remove("show");
-}
-
-/* ❌ CLOSE QUESTIONS SCREEN */
+/* ❌ CLOSE FINAL SCREEN */
 function closeQuestions(){
   questions.classList.remove("show");
 }
